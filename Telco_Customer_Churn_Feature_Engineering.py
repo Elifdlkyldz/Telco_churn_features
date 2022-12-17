@@ -1,7 +1,7 @@
 
-##############################
-# Telco Customer Churn Feature Engineering
-##############################
+
+### Telco Customer Churn
+
 
 # Problem : Şirketi terk edecek müşterileri tahmin edebilecek bir makine öğrenmesi modeli geliştirilmesi istenmektedir.
 # Modeli geliştirmeden önce gerekli olan veri analizi ve özellik mühendisliği adımlarını gerçekleştirmeniz beklenmektedir.
@@ -34,31 +34,6 @@
 # Churn : Müşterinin kullanıp kullanmadığı (Evet veya Hayır) - Geçen ay veya çeyreklik içerisinde ayrılan müşteriler
 
 
-# Her satır benzersiz bir müşteriyi temsil etmekte.
-# Değişkenler müşteri hizmetleri, hesap ve demografik veriler hakkında bilgiler içerir.
-# Müşterilerin kaydolduğu hizmetler - phone, multiple lines, internet, online security, online backup, device protection, tech support, and streaming TV and movies
-# Müşteri hesap bilgileri – ne kadar süredir müşteri oldukları, sözleşme, ödeme yöntemi, kağıtsız faturalandırma, aylık ücretler ve toplam ücretler
-# Müşteriler hakkında demografik bilgiler - cinsiyet, yaş aralığı ve ortakları ve bakmakla yükümlü oldukları kişiler olup olmadığı
-
-
-# GÖREV 1: KEŞİFCİ VERİ ANALİZİ
-           # Adım 1: Genel resmi inceleyiniz.
-           # Adım 2: Numerik ve kategorik değişkenleri yakalayınız.
-           # Adım 3:  Numerik ve kategorik değişkenlerin analizini yapınız.
-           # Adım 4: Hedef değişken analizi yapınız. (Kategorik değişkenlere göre hedef değişkenin ortalaması, hedef değişkene göre numerik değişkenlerin ortalaması)
-           # Adım 5: Aykırı gözlem analizi yapınız.
-           # Adım 6: Eksik gözlem analizi yapınız.
-           # Adım 7: Korelasyon analizi yapınız.
-
-# GÖREV 2: FEATURE ENGINEERING
-           # Adım 1:  Eksik ve aykırı değerler için gerekli işlemleri yapınız.
-           # işlemleri uygulayabilirsiniz.
-           # Adım 2: Yeni değişkenler oluşturunuz.
-           # Adım 3:  Encoding işlemlerini gerçekleştiriniz.
-           # Adım 4: Numerik değişkenler için standartlaştırma yapınız.
-           # Adım 5: Model oluşturunuz.
-
-
 # Gerekli Kütüphane ve Fonksiyonlar
 import numpy as np
 import pandas as pd
@@ -88,13 +63,9 @@ df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors='coerce')
 
 df["Churn"] = df["Churn"].apply(lambda x : 1 if x == "Yes" else 0)
 
-##################################
-# GÖREV 1: KEŞİFCİ VERİ ANALİZİ
-##################################
 
-##################################
-# GENEL RESİM
-##################################
+###KEŞİFCİ VERİ ANALİZİ
+
 
 def check_df(dataframe, head=5):
     print("##################### Shape #####################")
@@ -112,11 +83,8 @@ def check_df(dataframe, head=5):
 
 check_df(df)
 
+# NUMERİK VE KATEGORİK DEĞİŞKENLER
 
-
-##################################
-# NUMERİK VE KATEGORİK DEĞİŞKENLERİN YAKALANMASI
-##################################
 
 def grab_col_names(dataframe, cat_th=10, car_th=20):
     """
@@ -182,11 +150,8 @@ cat_cols
 num_cols
 cat_but_car
 
-
-
-##################################
 # KATEGORİK DEĞİŞKENLERİN ANALİZİ
-##################################
+
 
 def cat_summary(dataframe, col_name, plot=False):
     print(pd.DataFrame({col_name: dataframe[col_name].value_counts(),
@@ -199,12 +164,8 @@ def cat_summary(dataframe, col_name, plot=False):
 for col in cat_cols:
     cat_summary(df, col)
 
-
-
-
-##################################
 # NUMERİK DEĞİŞKENLERİN ANALİZİ
-##################################
+
 
 def num_summary(dataframe, numerical_col, plot=False):
     quantiles = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.99]
@@ -220,11 +181,7 @@ for col in num_cols:
     num_summary(df, col, plot=True)
 
 
-
-
-##################################
 # NUMERİK DEĞİŞKENLERİN TARGET GÖRE ANALİZİ
-##################################
 
 def target_summary_with_num(dataframe, target, numerical_col):
     print(dataframe.groupby(target).agg({numerical_col: "mean"}), end="\n\n\n")
@@ -232,10 +189,7 @@ def target_summary_with_num(dataframe, target, numerical_col):
 for col in num_cols:
     target_summary_with_num(df, "Churn", col)
 
-
-##################################
 # KATEGORİK DEĞİŞKENLERİN TARGET GÖRE ANALİZİ
-##################################
 
 
 def target_summary_with_cat(dataframe, target, categorical_col):
@@ -248,10 +202,8 @@ for col in cat_cols:
     target_summary_with_cat(df, "Churn", col)
 
 
-
-##################################
 # KORELASYON
-##################################
+
 
 df[num_cols].corr()
 
@@ -265,13 +217,12 @@ plt.show()
 
 df.corrwith(df["Churn"]).sort_values(ascending=False)
 
-##################################
-# GÖREV 2: FEATURE ENGINEERING
-##################################
 
-##################################
+#### FEATURE ENGINEERING
+
+
 # EKSİK DEĞER ANALİZİ
-##################################
+
 
 df.isnull().sum()
 
@@ -286,15 +237,13 @@ def missing_values_table(dataframe, na_name=False):
 
 na_columns = missing_values_table(df, na_name=True)
 
-df["TotalCharges"].fillna(df["TotalCharges"].median(), inplace=True)  # aylık ödenecek miktarlarıyla totalcharge doldurulailir (daya iyi olur denensin)  veya 11 değişken drop edilebilir
+df["TotalCharges"].fillna(df["TotalCharges"].median(), inplace=True) 
 
 df.isnull().sum()
 
 
+## BASE MODEL KURULUMU
 
-##################################
-# BASE MODEL KURULUMU
-##################################
 
 dff = df.copy()
 cat_cols = [col for col in cat_cols if col not in ["Churn"]]
@@ -328,10 +277,8 @@ print(f"Auc: {round(roc_auc_score(y_pred,y_test), 4)}")
 # Auc: 0.7282
 
 
-
-##################################
 # AYKIRI DEĞER ANALİZİ
-##################################
+
 
 def outlier_thresholds(dataframe, col_name, q1=0.05, q3=0.95):
     quartile1 = dataframe[col_name].quantile(q1)
@@ -362,10 +309,8 @@ for col in num_cols:
 
 
 
-
-##################################
 # ÖZELLİK ÇIKARIMI
-##################################
+
 
 # Tenure  değişkeninden yıllık kategorik değişken oluşturma
 df.loc[(df["tenure"]>=0) & (df["tenure"]<=12),"NEW_TENURE_YEAR"] = "0-1 Year"
@@ -412,9 +357,8 @@ df.head()
 df.shape
 
 
-##################################
 # ENCODING
-##################################
+
 
 # Değişkenlerin tiplerine göre ayrılması işlemi
 cat_cols, num_cols, cat_but_car = grab_col_names(df)
@@ -444,9 +388,9 @@ df = one_hot_encoder(df, cat_cols, drop_first=True)
 
 df.head()
 
-##################################
-# MODELLEME
-##################################
+
+### MODELLEME
+
 
 y = df["Churn"]
 X = df.drop(["Churn","customerID"], axis=1)
